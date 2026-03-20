@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PC-Caisse</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #333; }
+    .app { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    header { text-align: center; padding: 20px; background: #2c3e50; color: white; border-radius: 10px; margin-bottom: 20px; }
+    header h1 { font-size: 2rem; }
+    .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    section { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h2 { margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 8px; }
+    .ajout-produit { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+    .ajout-produit input { flex: 1; min-width: 120px; padding: 10px 12px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px; }
+    .ajout-produit input:focus { border-color: #3498db; outline: none; }
+    .ajout-produit button { padding: 10px 16px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; }
+    .ajout-produit button:hover { background: #219a52; }
+    .grille-produits { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; max-height: 500px; overflow-y: auto; }
+    .carte-produit { background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 8px; padding: 15px; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .carte-produit:hover { border-color: #3498db; background: #d6eaf8; transform: translateY(-2px); }
+    .carte-produit .nom { font-weight: bold; font-size: 14px; margin-bottom: 5px; }
+    .carte-produit .prix { color: #27ae60; font-size: 18px; font-weight: bold; }
+    .liste-panier { min-height: 300px; max-height: 450px; overflow-y: auto; }
+    .item-panier { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-bottom: 1px solid #eee; }
+    .item-panier:hover { background: #f9f9f9; }
+    .item-panier .info { flex: 1; }
+    .item-panier .nom-item { font-weight: bold; }
+    .item-panier .prix-item { color: #666; font-size: 13px; }
+    .item-panier .quantite { display: flex; align-items: center; gap: 8px; }
+    .item-panier .quantite button { width: 28px; height: 28px; border: none; border-radius: 50%; background: #3498db; color: white; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .item-panier .quantite button:hover { background: #2980b9; }
+    .item-panier .quantite button.btn-suppr { background: #e74c3c; }
+    .item-panier .quantite button.btn-suppr:hover { background: #c0392b; }
+    .item-panier .quantite span { font-weight: bold; min-width: 20px; text-align: center; }
+    .item-panier .sous-total { font-weight: bold; min-width: 70px; text-align: right; }
+    .total { display: flex; justify-content: space-between; padding: 15px 0; margin-top: 10px; border-top: 3px solid #2c3e50; font-size: 1.5rem; font-weight: bold; }
+    #total-prix { color: #27ae60; }
+    .actions-panier { display: flex; gap: 10px; margin-top: 15px; }
+    .actions-panier button { flex: 1; padding: 12px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
+    .btn-danger { background: #e74c3c; color: white; }
+    .btn-danger:hover { background: #c0392b; }
+    .btn-valider { background: #27ae60; color: white; }
+    .btn-valider:hover { background: #219a52; }
+    .panier-vide { text-align: center; color: #aaa; padding: 60px 20px; font-size: 18px; }
+    @media (max-width: 768px) { .main-layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>PC-Caisse</h1>
+    </header>
+    <div class="main-layout">
+      <section class="produits">
+        <h2>Produits</h2>
+        <div class="ajout-produit">
+          <input type="text" id="nom-produit" placeholder="Nom du produit">
+          <input type="number" id="prix-produit" placeholder="Prix (€)" step="0.01" min="0">
+          <button id="btn-ajouter-catalogue">+ Ajouter au catalogue</button>
+        </div>
+        <div id="liste-produits" class="grille-produits"></div>
+      </section>
+      <section class="panier">
+        <h2>Panier du client</h2>
+        <div id="liste-panier" class="liste-panier"></div>
+        <div class="total">
+          <span>TOTAL :</span>
+          <span id="total-prix">0.00 €</span>
+        </div>
+        <div class="actions-panier">
+          <button id="btn-vider" class="btn-danger">Vider le panier</button>
+          <button id="btn-valider" class="btn-valider">Valider</button>
+        </div>
+      </section>
+    </div>
+  </div>
+  <script>
+    let catalogue = JSON.parse(localStorage.getItem('catalogue') || '[]');
+    let panier = [];
+    const nomProduit = document.getElementById('nom-produit');
+    const prixProduit = document.getElementById('prix-produit');
+    const btnAjouterCatalogue = document.getElementById('btn-ajouter-catalogue');
+    const listeProduits = document.getElementById('liste-produits');
+    const listePanier = document.getElementById('liste-panier');
+    const totalPrix = document.getElementById('total-prix');
+    const btnVider = document.getElementById('btn-vider');
+    const btnValider = document.getElementById('btn-valider');
+
+    function sauvegarderCatalogue() { localStorage.setItem('catalogue', JSON.stringify(catalogue)); }
+
+    function afficherCatalogue() {
+      listeProduits.innerHTML = '';
+      catalogue.forEach((produit, index) => {
+        const carte = document.createElement('div');
+        carte.className = 'carte-produit';
+        carte.innerHTML = '<div class="nom">' + produit.nom + '</div><div class="prix">' + produit.prix.toFixed(2) + ' €</div>';
+        carte.addEventListener('click', () => ajouterAuPanier(index));
+        listeProduits.appendChild(carte);
+      });
+    }
+
+    btnAjouterCatalogue.addEventListener('click', () => {
+      const nom = nomProduit.value.trim();
+      const prix = parseFloat(prixProduit.value);
+      if (!nom || isNaN(prix) || prix < 0) return;
+      catalogue.push({ nom, prix });
+      sauvegarderCatalogue();
+      afficherCatalogue();
+      nomProduit.value = '';
+      prixProduit.value = '';
+      nomProduit.focus();
+    });
+
+    prixProduit.addEventListener('keydown', (e) => { if (e.key === 'Enter') btnAjouterCatalogue.click(); });
+
+    function ajouterAuPanier(indexProduit) {
+      const produit = catalogue[indexProduit];
+      const itemExistant = panier.find(item => item.nom === produit.nom);
+      if (itemExistant) { itemExistant.quantite++; } else { panier.push({ nom: produit.nom, prix: produit.prix, quantite: 1 }); }
+      afficherPanier();
+    }
+
+    function afficherPanier() {
+      if (panier.length === 0) {
+        listePanier.innerHTML = '<div class="panier-vide">Le panier est vide</div>';
+        totalPrix.textContent = '0.00 €';
+        return;
+      }
+      listePanier.innerHTML = '';
+      let total = 0;
+      panier.forEach((item, index) => {
+        const sousTotal = item.prix * item.quantite;
+        total += sousTotal;
+        const div = document.createElement('div');
+        div.className = 'item-panier';
+        div.innerHTML = '<div class="info"><div class="nom-item">' + item.nom + '</div><div class="prix-item">' + item.prix.toFixed(2) + ' € / unité</div></div><div class="quantite"><button class="btn-suppr" data-index="' + index + '" data-action="moins">-</button><span>' + item.quantite + '</span><button data-index="' + index + '" data-action="plus">+</button></div><div class="sous-total">' + sousTotal.toFixed(2) + ' €</div>';
+        listePanier.appendChild(div);
+      });
+      totalPrix.textContent = total.toFixed(2) + ' €';
+      listePanier.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.dataset.index);
+          if (btn.dataset.action === 'plus') { panier[idx].quantite++; } else { panier[idx].quantite--; if (panier[idx].quantite <= 0) panier.splice(idx, 1); }
+          afficherPanier();
+        });
+      });
+    }
+
+    btnVider.addEventListener('click', () => { panier = []; afficherPanier(); });
+    btnValider.addEventListener('click', () => {
+      if (panier.length === 0) return;
+      const total = panier.reduce((sum, item) => sum + item.prix * item.quantite, 0);
+      alert('Achat validé !\nTotal : ' + total.toFixed(2) + ' €\nMerci !');
+      panier = [];
+      afficherPanier();
+    });
+
+    afficherCatalogue();
+    afficherPanier();
+  </script>
+</body>
+</html>
