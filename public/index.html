@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PC-Caisse</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>PC-Caisse</h1>
+    </header>
+
+    <div class="main-layout">
+      <!-- Catalogue produits -->
+      <section class="produits">
+        <h2>Produits</h2>
+        <div class="ajout-produit">
+          <input type="text" id="nom-produit" placeholder="Nom du produit">
+          <input type="number" id="prix-produit" placeholder="Prix (€)" step="0.01" min="0">
+          <button id="btn-ajouter-catalogue">+ Ajouter au catalogue</button>
+        </div>
+        <div id="liste-produits" class="grille-produits"></div>
+      </section>
+
+      <!-- Panier client -->
+      <section class="panier">
+        <h2>Panier du client</h2>
+        <div id="liste-panier" class="liste-panier"></div>
+        <div class="total">
+          <span>TOTAL :</span>
+          <span id="total-prix">0.00 €</span>
+        </div>
+        <div class="actions-panier">
+          <button id="btn-vider" class="btn-danger">Vider le panier</button>
+          <button id="btn-valider" class="btn-valider">Valider</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

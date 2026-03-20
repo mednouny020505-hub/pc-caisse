@@ -1,0 +1,13 @@
+{
+  "name": "pc-caisse",
+  "version": "1.0.0",
+  "description": "Application de caisse - Affichage des articles client",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
