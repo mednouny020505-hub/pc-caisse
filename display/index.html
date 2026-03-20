@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affichage Client</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Ecran d'accueil (quand pas de transaction) -->
+    <div id="welcome-screen" class="screen active">
+        <div class="welcome-header">
+            <div id="store-logo" class="store-logo">
+                <div class="logo-placeholder">VOTRE LOGO</div>
+            </div>
+            <h1 id="store-name" class="store-name">Votre Magasin</h1>
+        </div>
+        <div class="welcome-message">
+            <h2>Bienvenue !</h2>
+            <p id="welcome-text">Nous sommes heureux de vous accueillir</p>
+        </div>
+        <div class="promo-banner" id="promo-banner">
+            <div class="promo-slider" id="promo-slider"></div>
+        </div>
+        <div class="datetime-bar">
+            <span id="current-date"></span>
+            <span id="current-time"></span>
+        </div>
+    </div>
+
+    <!-- Ecran de transaction (quand articles en cours) -->
+    <div id="transaction-screen" class="screen">
+        <div class="transaction-header">
+            <div class="header-left">
+                <h2 id="tx-store-name" class="tx-store-name">Votre Magasin</h2>
+            </div>
+            <div class="header-right">
+                <span id="tx-date" class="tx-date"></span>
+                <span id="tx-time" class="tx-time"></span>
+            </div>
+        </div>
+
+        <div class="transaction-body">
+            <!-- Dernier article scanné -->
+            <div class="last-item-panel" id="last-item-panel">
+                <div class="last-item-label">Dernier article</div>
+                <div class="last-item-name" id="last-item-name">-</div>
+                <div class="last-item-price" id="last-item-price">0,00 &euro;</div>
+                <div class="last-item-qty" id="last-item-qty"></div>
+            </div>
+
+            <!-- Liste des articles -->
+            <div class="items-list-container">
+                <div class="items-list-header">
+                    <span class="col-desc">Description</span>
+                    <span class="col-qty">Qté</span>
+                    <span class="col-price">Prix</span>
+                    <span class="col-total">Total</span>
+                </div>
+                <div class="items-list" id="items-list">
+                    <!-- Les articles seront ajoutés dynamiquement -->
+                </div>
+                <div class="items-count" id="items-count">0 article(s)</div>
+            </div>
+        </div>
+
+        <div class="transaction-footer">
+            <div class="totals-panel">
+                <div class="total-row subtotal-row">
+                    <span class="total-label">Sous-total</span>
+                    <span class="total-value" id="subtotal">0,00 &euro;</span>
+                </div>
+                <div class="total-row discount-row" id="discount-row" style="display:none">
+                    <span class="total-label">Remise</span>
+                    <span class="total-value discount" id="discount">-0,00 &euro;</span>
+                </div>
+                <div class="total-row tax-row">
+                    <span class="total-label">TVA</span>
+                    <span class="total-value" id="tax">0,00 &euro;</span>
+                </div>
+                <div class="total-row grand-total-row">
+                    <span class="total-label">TOTAL</span>
+                    <span class="total-value" id="grand-total">0,00 &euro;</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ecran de paiement -->
+    <div id="payment-screen" class="screen">
+        <div class="payment-content">
+            <h2>Montant à payer</h2>
+            <div class="payment-amount" id="payment-amount">0,00 &euro;</div>
+            <div class="payment-method" id="payment-method"></div>
+            <div class="payment-info" id="payment-info"></div>
+        </div>
+    </div>
+
+    <!-- Ecran de remerciement -->
+    <div id="thankyou-screen" class="screen">
+        <div class="thankyou-content">
+            <div class="checkmark-circle">
+                <svg viewBox="0 0 52 52" class="checkmark-svg">
+                    <circle cx="26" cy="26" r="25" fill="none" class="checkmark-circle-bg"/>
+                    <path fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" class="checkmark-check"/>
+                </svg>
+            </div>
+            <h2>Merci pour votre achat !</h2>
+            <p id="thankyou-text">A bientôt !</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

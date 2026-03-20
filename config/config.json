@@ -1,0 +1,19 @@
+{
+  "store_name": "Votre Magasin",
+  "welcome_message": "Nous sommes heureux de vous accueillir",
+  "thankyou_message": "Merci et a bientot !",
+  "thankyou_duration": 5000,
+  "logo_url": "",
+  "promos": [
+    "Bienvenue dans notre magasin !",
+    "Carte fidelite : demandez-la en caisse !",
+    "Ouvert du lundi au samedi de 8h a 20h"
+  ],
+  "colors": {
+    "primary": "#1a237e",
+    "accent": "#ff6f00"
+  },
+  "flexo_ticket_path": "C:\\Flexo6\\Tickets",
+  "flexo_watch_enabled": true,
+  "tax_rate": 0.20
+}
