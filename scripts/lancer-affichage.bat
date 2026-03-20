@@ -25,19 +25,27 @@ if errorlevel 1 (
     exit /b 1
 )
 
+REM Installer les dependances si necessaire
+echo [0/4] Verification des dependances...
+pip install pynput >nul 2>&1
+pip install firebirdsql >nul 2>&1
+
 REM Demarrer le serveur en arriere-plan
-echo [1/3] Demarrage du serveur local...
-start /B python server\server.py --port 5555
+echo [1/4] Demarrage du serveur local (port 5555)...
+start /B "AffichageServeur" python server\server.py --port 5555
 
 REM Attendre que le serveur demarre
 timeout /t 2 /nobreak >nul
 
-REM Demarrer le moniteur Flexo 6
-echo [2/3] Demarrage du moniteur Flexo 6...
-start /B python scripts\flexo_monitor.py
+REM Demarrer le moniteur Flexo 6 (capture scanner + base)
+echo [2/4] Demarrage du moniteur temps reel Flexo 6...
+start /B "AffichageMoniteur" python scripts\flexo_monitor.py
+
+REM Attendre le moniteur
+timeout /t 1 /nobreak >nul
 
 REM Ouvrir l'affichage client dans Chrome en mode kiosque sur le 2eme ecran
-echo [3/3] Ouverture de l'affichage client...
+echo [3/4] Ouverture de l'affichage client sur le 2eme ecran...
 
 REM Detecter Chrome
 set CHROME_PATH=
@@ -48,29 +56,45 @@ if exist "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" (
     set "CHROME_PATH=C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
 )
 
+REM Detecter Edge (alternative)
+set EDGE_PATH=
+if exist "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" (
+    set "EDGE_PATH=C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+)
+
 if defined CHROME_PATH (
     echo Ouverture avec Google Chrome en mode kiosque...
     REM --kiosk = plein ecran sans barre d'adresse
     REM --window-position pour positionner sur le 2eme ecran
-    REM Ajustez les coordonnees selon votre config ecran
+    REM IMPORTANT: Ajustez 1920,0 selon votre resolution d'ecran principal
     start "" "%CHROME_PATH%" --kiosk --new-window --window-position=1920,0 --app=http://localhost:5555
+) else if defined EDGE_PATH (
+    echo Ouverture avec Microsoft Edge en mode kiosque...
+    start "" "%EDGE_PATH%" --kiosk --new-window --window-position=1920,0 --app=http://localhost:5555
 ) else (
-    echo Chrome non detecte, ouverture avec le navigateur par defaut...
+    echo Navigateur non detecte, ouverture par defaut...
     start http://localhost:5555
 )
 
+echo [4/4] Pret !
 echo.
 echo  ==========================================
 echo   AFFICHAGE CLIENT DEMARRE !
 echo  ==========================================
 echo.
-echo   Serveur: http://localhost:5555
-echo   Demo:    http://localhost:5555?demo=1
+echo   Serveur:    http://localhost:5555
+echo   Demo:       http://localhost:5555?demo=1
 echo.
-echo   Appuyez sur une touche pour arreter...
+echo   Le moniteur capture les scans en temps reel.
+echo   Les produits s'affichent au moment du scan,
+echo   AVANT la creation du ticket.
+echo.
+echo   Appuyez sur une touche pour tout arreter...
 echo  ==========================================
 pause >nul
 
-REM Arreter les processus
-taskkill /f /im python.exe /fi "WINDOWTITLE eq Affichage*" >nul 2>&1
-echo Serveur arrete.
+REM Arreter proprement
+echo Arret en cours...
+taskkill /f /fi "WINDOWTITLE eq AffichageServeur" >nul 2>&1
+taskkill /f /fi "WINDOWTITLE eq AffichageMoniteur" >nul 2>&1
+echo Termine.

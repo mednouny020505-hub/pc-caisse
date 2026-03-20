@@ -13,7 +13,11 @@
     "primary": "#1a237e",
     "accent": "#ff6f00"
   },
-  "flexo_ticket_path": "C:\\Flexo6\\Tickets",
-  "flexo_watch_enabled": true,
-  "tax_rate": 0.20
+  "tax_rate": 0.20,
+
+  "flexo_db_path": "",
+  "flexo_db_host": "localhost",
+  "flexo_db_port": 3050,
+  "flexo_db_user": "SYSDBA",
+  "flexo_db_password": "masterkey"
 }
